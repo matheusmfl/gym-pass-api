@@ -2,7 +2,16 @@ import { Prisma, User } from "@prisma/client";
 import { UsersRepository } from "../users-repository";
 
 export class inMemoryUsersRepository implements UsersRepository {
+
   public items: User[] = []
+
+  async findById(id: string): Promise<{ id: string; name: string; email: string; password_hash: string; created_at: Date; } | null> {
+    const user = this.items.find(item => item.id === id)
+    if (!user) {
+      return null
+    }
+    return user
+  }
 
   async findByEmail(email: string) {
     const user = this.items.find(item => item.email === email)
@@ -15,7 +24,7 @@ export class inMemoryUsersRepository implements UsersRepository {
 
 
     const user = {
-      id: 'user-1',
+      id: data.id || 'user-1',
       name: data.name,
       email: data.email,
       password_hash: data.password_hash,
