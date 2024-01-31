@@ -1,16 +1,21 @@
-import { expect, describe, it } from 'vitest'
+import { expect, describe, it, beforeEach } from 'vitest'
 import { RegisterUseCase } from './register'
 import { compare } from 'bcryptjs'
 import { inMemoryUsersRepository } from '@/repositories/in-memory/in-memory-users-repository'
 import { UserAlreadyExistsError } from './errors/user-already-exists-error'
 
 
+let userRepository: inMemoryUsersRepository
+let sut: RegisterUseCase
 describe('Register Use Case', () => {
+  beforeEach(() => {
+    userRepository = new inMemoryUsersRepository()
+    sut = new RegisterUseCase(userRepository)
+  })
   it('should hash user password upon registration', async () => {
-    const userRepository = new inMemoryUsersRepository
-    const registerUseCase = new RegisterUseCase(userRepository)
 
-    const { user } = await registerUseCase.execute({
+
+    const { user } = await sut.execute({
       name: 'Jhon Doe',
       email: 'jhondoe@email.com',
       password: '123456'
@@ -23,12 +28,11 @@ describe('Register Use Case', () => {
   })
 
   it('should not be able to register with same email twice', async () => {
-    const userRepository = new inMemoryUsersRepository
-    const registerUseCase = new RegisterUseCase(userRepository)
+
 
     const email = 'jhondoe@email.com'
 
-    await registerUseCase.execute({
+    await sut.execute({
       name: 'Jhon Doe',
       email,
       password: '123456'
@@ -36,7 +40,7 @@ describe('Register Use Case', () => {
 
 
     expect(async () => {
-      await registerUseCase.execute({
+      await sut.execute({
         name: 'Jhon Doe',
         email,
         password: '123456'
@@ -45,10 +49,9 @@ describe('Register Use Case', () => {
   })
 
   it('should be able to register', async () => {
-    const userRepository = new inMemoryUsersRepository
-    const registerUseCase = new RegisterUseCase(userRepository)
 
-    const { user } = await registerUseCase.execute({
+
+    const { user } = await sut.execute({
       name: 'Jhon Doe',
       email: 'jhondoe@email.com',
       password: '123456'
