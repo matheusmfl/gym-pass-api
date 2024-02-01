@@ -39,8 +39,8 @@ describe('Check-in Use Case', () => {
     const { checkIn } = await sut.execute({
       userId: 'user-01',
       gymId: 'gym-01',
-      userLatitude: '0',
-      userLongitude: '0'
+      userLatitude: 0,
+      userLongitude: 0
     })
 
     await expect(checkIn.id).toEqual(expect.any(String))
@@ -53,8 +53,8 @@ describe('Check-in Use Case', () => {
     await sut.execute({
       userId: 'user-01',
       gymId: 'gym-01',
-      userLatitude: '0',
-      userLongitude: '0'
+      userLatitude: 0,
+      userLongitude: 0
     })
 
     await expect(
@@ -63,8 +63,8 @@ describe('Check-in Use Case', () => {
           sut.execute({
             userId: 'user-01',
             gymId: 'gym-01',
-            userLatitude: '0',
-            userLongitude: '0'
+            userLatitude: 0,
+            userLongitude: 0
           })
         )
       }
@@ -78,8 +78,8 @@ describe('Check-in Use Case', () => {
     await sut.execute({
       userId: 'user-01',
       gymId: 'gym-01',
-      userLatitude: '0',
-      userLongitude: '0'
+      userLatitude: 0,
+      userLongitude: 0
     })
 
     vi.setSystemTime(new Date(2021, 0, 20, 8, 0, 0))
@@ -87,8 +87,8 @@ describe('Check-in Use Case', () => {
     const { checkIn } = await sut.execute({
       userId: 'user-01',
       gymId: 'gym-01',
-      userLatitude: '0',
-      userLongitude: '0'
+      userLatitude: 0,
+      userLongitude: 0,
     })
 
 
@@ -97,5 +97,30 @@ describe('Check-in Use Case', () => {
 
   })
 
+  it('should not be able to check in on distant gym', async () => {
+    vi.setSystemTime(new Date(2022, 0, 20, 8, 0, 0))
 
+    gymsRepository.items.push({
+      id: 'gym-02',
+      title: 'Javascript Gym',
+      description: '',
+      phone: '',
+      latitude: new Decimal(-7.0799741),
+      longitude: new Decimal(-34.8520448)
+    })
+
+
+
+
+
+    await expect(async () => {
+      await sut.execute({
+        userId: 'user-01',
+        gymId: 'gym-02',
+        userLatitude: -6.9718637,
+        userLongitude: -34.8351054
+      })
+    }).rejects.toBeInstanceOf(Error)
+
+  })
 })
