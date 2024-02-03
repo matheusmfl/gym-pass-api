@@ -1,20 +1,29 @@
 import { Gym, Prisma } from "@prisma/client";
 
 import { GymsRepository } from "../gyms-repository";
+import { randomUUID } from "crypto";
 
 export class inMemoryGymsRepository implements GymsRepository {
 
 
+
   public items: Gym[] = []
 
-  async create(data: Prisma.GymCreateInput): Promise<{ id: string; title: string; description: string | null; phone: string | null; latitude: Prisma.Decimal; longitude: Prisma.Decimal; }> {
+  async searchMany(query: string, page: number) {
+    return this.items
+      .filter((item) => item.title.includes(query))
+      .slice((page - 1) * 20, page * 20)
+  }
+
+  async create(data: Prisma.GymCreateInput) {
     const gym = {
-      description: data.description ?? 'description',
-      id: data.id ?? 'gym-01',
+      id: data.id ?? randomUUID(),
+      title: data.title,
+      description: data.description ?? null,
+      phone: data.phone ?? null,
       latitude: new Prisma.Decimal(data.latitude.toString()),
       longitude: new Prisma.Decimal(data.longitude.toString()),
-      phone: data.phone ?? 'Olá',
-      title: data.title
+      created_at: new Date(),
     }
 
     this.items.push(gym)
