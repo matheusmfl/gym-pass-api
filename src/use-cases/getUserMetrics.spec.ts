@@ -23,6 +23,7 @@ describe('Get user Metrics Use Case', () => {
     })
 
 
+
     await checkInRepository.create({
       gym_id: 'gym-02',
       user_id: 'user-01',
