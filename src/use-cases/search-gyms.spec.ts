@@ -60,7 +60,6 @@ describe('Search gym test use case', () => {
       query: 'JavaScript',
       page: 2
     })
-    console.log(gyms)
 
     expect(gyms).toHaveLength(2)
     expect(gyms).toEqual([
